@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.2
+
+- The Deck tile is neutral: Sessions is not a toggle, so it no longer takes
+  the selected fill. Custom tiles also keep Deck's standard border now.
+
 ## 0.1.1
 
 - A **4x1 tile** (`tileFull`) lists each monitor's window count and active

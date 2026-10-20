@@ -12,7 +12,8 @@ Item {
 
   readonly property var state: stateLoader.item
 
-  readonly property bool active: state ? state.active : false
+  // Sessions is not a toggle; keep the tile surface neutral.
+  readonly property bool active: false
   readonly property string label: state ? state.label : ""
   readonly property string detail: state ? state.detail : ""
   readonly property string icon: state ? state.icon : ""
