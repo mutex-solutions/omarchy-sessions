@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "mutex-solutions.sessions",
+  "name": "Sessions",
+  "version": "0.1.0",
+  "author": "mutex-solutions",
+  "license": "MIT",
+  "description": "Move windows, workspaces and whole sessions between displays, as a bar widget or a Deck section.",
+  "kinds": ["bar-widget"],
+  "entryPoints": {
+    "barWidget": "Panel.qml"
+  },
+  "barWidget": {
+    "displayName": "Sessions",
+    "description": "Windows and workspaces",
+    "category": "Desktop",
+    "allowMultiple": false,
+    "defaultSection": "right"
+  }
+}
