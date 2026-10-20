@@ -85,8 +85,8 @@ Item {
 
   readonly property string detail: {
     if (sessions.length === 0) return "no displays"
-    return sessions.length + (sessions.length === 1 ? " display" : " displays")
-      + " · " + windowCount + (windowCount === 1 ? " window" : " windows")
+    // The half tile has one line; the display count is the page's job.
+    return windowCount + (windowCount === 1 ? " window" : " windows")
   }
 
   function otherFor(name) {
