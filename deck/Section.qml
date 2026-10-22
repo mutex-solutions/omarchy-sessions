@@ -33,8 +33,29 @@ Item {
       readonly property var groups: st ? st.sessions : []
 
       MouseArea {
+        id: pageArea
         anchors.fill: parent
-        onClicked: s.openPage()
+        property bool held: false
+        onPressed: {
+          held = false
+          pageHold.restart()
+        }
+        onReleased: {
+          pageHold.stop()
+          if (!held) s.openPage()
+        }
+        onCanceled: pageHold.stop()
+
+        // A custom body does not get the host's hold gesture. Match it here:
+        // holding opens the page without waiting for release.
+        Timer {
+          id: pageHold
+          interval: 450
+          onTriggered: {
+            pageArea.held = true
+            s.openPage()
+          }
+        }
       }
 
       Text {

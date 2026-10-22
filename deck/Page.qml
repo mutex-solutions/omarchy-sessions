@@ -186,8 +186,13 @@ Item {
         anchors.right: parent.right
         anchors.rightMargin: Style.space(8)
         anchors.verticalCenter: parent.verticalCenter
-        label: "⇄ " + page.sessions[0].name + " ↔ " + page.sessions[1].name
-        onPicked: page.state.swapSessions(page.sessions[0].name, page.sessions[1].name)
+        label: page.sessions.length > 1
+          ? "⇄ " + page.sessions[0].name + " ↔ " + page.sessions[1].name
+          : ""
+        onPicked: {
+          if (page.sessions.length > 1)
+            page.state.swapSessions(page.sessions[0].name, page.sessions[1].name)
+        }
       }
     }
 

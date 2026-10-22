@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3
+
+- A hold on the 4x1 Sessionstile opens the Sessions page, matching the host gesture on non-custom tiles. The page no longer evaluates the swap label before both sessions exist.
+
 ## 0.1.2
 
 - The Deck tile is neutral: Sessions is not a toggle, so it no longer takes
