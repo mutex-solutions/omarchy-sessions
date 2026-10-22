@@ -23,7 +23,7 @@ Item {
 
   readonly property bool active: true
   readonly property string label: "Sessions"
-  readonly property string icon: "▤"
+  readonly property string icon: "󰕮"
 
   readonly property var focusedMonitor: {
     for (var i = 0; i < monitors.length; i++)

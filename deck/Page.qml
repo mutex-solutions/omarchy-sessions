@@ -41,6 +41,9 @@ Item {
     property string glyph: ""
     property string title: ""
     property string value: ""
+    // Upper-casing is for section labels; a monitor's own name (eDP-1) is not
+    // a label and reads wrongly as EDP-1.
+    property bool keepCase: false
     property int gap: 0
     width: parent ? parent.width : 0
     height: Style.space(22) + gap
@@ -66,7 +69,7 @@ Item {
         anchors.left: headGlyph.right
         anchors.leftMargin: Style.space(6)
         anchors.verticalCenter: parent.verticalCenter
-        text: head.title.toUpperCase()
+        text: head.keepCase ? head.title : head.title.toUpperCase()
         color: Util.alpha(Color.foreground, 0.45)
         font.family: Style.font.family
         font.pixelSize: Style.font.caption
@@ -131,7 +134,7 @@ Item {
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
         width: Style.space(30)
-        text: "▤"
+        text: page.state ? page.state.icon : ""
         color: Color.foreground
         font.family: Style.font.family
         font.pixelSize: Style.font.display
@@ -147,7 +150,8 @@ Item {
 
         Text {
           width: parent.width
-          text: "Sessions"
+          // Deck's header already says "Sessions"; the hero says what is in them.
+          text: page.state ? page.state.detail : ""
           color: Color.foreground
           font.family: Style.font.family
           font.pixelSize: Style.font.title
@@ -156,7 +160,7 @@ Item {
 
         Caps {
           width: parent.width
-          text: page.state ? page.state.detail : ""
+          text: page.sessions.length + (page.sessions.length === 1 ? " display" : " displays")
         }
       }
     }
@@ -214,6 +218,7 @@ Item {
 
         Head {
           glyph: "▭"
+          keepCase: true
           title: sessionCol.session.name
           value: sessionCol.session.windows.length
             + (sessionCol.session.windows.length === 1 ? " window" : " windows")
@@ -254,7 +259,7 @@ Item {
               anchors.rightMargin: Style.space(8)
               anchors.verticalCenter: parent.verticalCenter
               label: "→ " + sessionCol.other
-              enabled: sessionCol.other !== ""
+              visible: sessionCol.other !== ""
               onPicked: page.state.moveWorkspace(modelData.id, sessionCol.other)
             }
           }
@@ -305,12 +310,13 @@ Item {
             required property var modelData
 
             width: sessionCol.width
-            height: Style.space(30)
+            // Two lines of text (body + caption) need more than 30 px.
+            height: Style.space(38)
 
             Column {
               anchors.left: parent.left
               anchors.leftMargin: Style.space(8)
-              anchors.right: winChip.left
+              anchors.right: winChip.visible ? winChip.left : parent.right
               anchors.rightMargin: Style.space(8)
               anchors.verticalCenter: parent.verticalCenter
               spacing: 1
@@ -327,6 +333,7 @@ Item {
               Caps {
                 width: parent.width
                 text: modelData.class + " · ws " + modelData.workspaceId
+                elide: Text.ElideRight
               }
             }
 
@@ -336,7 +343,7 @@ Item {
               anchors.rightMargin: Style.space(8)
               anchors.verticalCenter: parent.verticalCenter
               label: "→ " + sessionCol.other
-              enabled: sessionCol.other !== ""
+              visible: sessionCol.other !== ""
               onPicked: page.state.moveWindow(modelData.address, sessionCol.other)
             }
           }
@@ -348,11 +355,12 @@ Item {
 
     Caps {
       width: parent.width
-      height: Style.space(16)
-      horizontalAlignment: Text.AlignHCenter
+      wrapMode: Text.WordWrap
+      topPadding: Style.space(3)
+      leftPadding: Style.space(8)
       text: page.sessions.length > 1
         ? "Moves go to the other display's active workspace"
-        : "Only one display"
+        : "Connect a second display to move windows between them"
     }
   }
 }

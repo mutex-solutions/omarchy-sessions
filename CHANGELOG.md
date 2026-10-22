@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.4
+
+- Window rows are tall enough for their two lines, and the class line elides
+  instead of running under the move button.
+- The move buttons are hidden when there is no other display, rather than shown
+  disabled.
+- A monitor's name keeps its case (`eDP-1`, not `EDP-1`).
+- The page hero says what is in the sessions ("5 windows", "1 display") instead
+  of repeating the title Deck already shows. The footer wraps, and says what to
+  do when there is one display.
+- The 4x1 tile uses Deck's fixed icon cell and is no longer always accent
+  coloured.
+
 ## 0.1.3
 
 - A hold on the 4x1 Sessionstile opens the Sessions page, matching the host gesture on non-custom tiles. The page no longer evaluates the swap label before both sessions exist.
