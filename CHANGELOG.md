@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.5
+
+- Holding the large tile shows Deck's progress hairline, like every other tile (needs Deck 0.10.3).
+
 ## 0.1.4
 
 - Window rows are tall enough for their two lines, and the class line elides

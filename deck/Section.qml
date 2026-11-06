@@ -29,6 +29,8 @@ Item {
 
     Item {
       id: full
+      signal holdStarted()
+      signal holdEnded()
       readonly property var st: s.state
       readonly property var groups: st ? st.sessions : []
 
@@ -39,12 +41,17 @@ Item {
         onPressed: {
           held = false
           pageHold.restart()
+          full.holdStarted()
         }
         onReleased: {
           pageHold.stop()
+          full.holdEnded()
           if (!held) s.openPage()
         }
-        onCanceled: pageHold.stop()
+        onCanceled: {
+          pageHold.stop()
+          full.holdEnded()
+        }
 
         // A custom body does not get the host's hold gesture. Match it here:
         // holding opens the page without waiting for release.
@@ -53,6 +60,7 @@ Item {
           interval: 450
           onTriggered: {
             pageArea.held = true
+            full.holdEnded()
             s.openPage()
           }
         }
