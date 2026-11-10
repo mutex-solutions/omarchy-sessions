@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+- Custom tile navigation now stays inside the originating Deck panel rather than
+  using global IPC, so opening the page cannot jump to another monitor.
+
+- Workspace, whole-session and swap moves now go through Omarchy's
+  `workspaces.move_to_monitor` engine, preserving monitor-block adoption, source
+  settling and focus behavior instead of reimplementing them with raw moves.
+- Three or more monitors get an explicit destination picker; helper text names
+  the selected display rather than assuming there are only two.
+- Disabled chips no longer respond to clicks, controls expose accessible actions,
+  and the UI ships an English translation catalog with live language bindings.
+
 ## 0.1.5
 
 - Holding the large tile shows Deck's progress hairline, like every other tile (needs Deck 0.10.3).

@@ -9,6 +9,8 @@ import qs.Commons
 Panel {
   id: root
 
+  Translations { id: strings; directory: Qt.resolvedUrl("i18n") }
+
   moduleName: "mutex-solutions.sessions"
   ipcTarget: "mutex-solutions.sessions"
 
@@ -78,7 +80,7 @@ Panel {
             anchors.left: headerGlyph.right
             anchors.leftMargin: Style.space(8)
             anchors.verticalCenter: parent.verticalCenter
-            text: "Sessions"
+            text: strings.t("sessions.sessions")
             color: Color.foreground
             font.family: Style.font.family
             font.pixelSize: Style.font.title

@@ -1,0 +1,11 @@
+{
+  "sessions.connectSecondDisplay": "Connect a second display to move windows between them",
+  "sessions.moveSession": "Move session",
+  "sessions.moveTo": "Move to",
+  "sessions.moveToward": "Move toward",
+  "sessions.noDisplays": "No displays",
+  "sessions.sessions": "Sessions",
+  "sessions.swapSessions": "Swap sessions",
+  "sessions.windowExactWorkspaceDirectional": "Window moves use the selected display; workspace moves are directional",
+  "sessions.workspace": "Workspace "
+}

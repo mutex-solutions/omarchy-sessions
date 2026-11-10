@@ -12,6 +12,8 @@ import qs.Commons
 Item {
   id: s
 
+  Translations { id: strings; directory: Qt.resolvedUrl("i18n") }
+
   // [{ id, name, focused, activeWorkspaceId, x, y, w, h, scale }]
   property var monitors: []
   // [{ id, name, monitor, windows }]
@@ -22,7 +24,7 @@ Item {
   property string activeAddress: ""
 
   readonly property bool active: true
-  readonly property string label: "Sessions"
+  readonly property string label: strings.t("sessions.sessions")
   readonly property string icon: "󰕮"
 
   readonly property var focusedMonitor: {
@@ -90,9 +92,15 @@ Item {
   }
 
   function otherFor(name) {
+    var destinations = destinationsFor(name)
+    return destinations.length > 0 ? destinations[0] : ""
+  }
+
+  function destinationsFor(name) {
+    var out = []
     for (var i = 0; i < monitors.length; i++)
-      if (monitors[i].name !== name) return monitors[i].name
-    return ""
+      if (monitors[i].name !== name) out.push(monitors[i].name)
+    return out
   }
 
   function workspaceIds(name) {
@@ -133,39 +141,55 @@ Item {
     applyLua(lines.join("\n"))
   }
 
+  function workspaceById(id) {
+    for (var i = 0; i < workspaces.length; i++) if (workspaces[i].id === id) return workspaces[i]
+    return null
+  }
+
+  function moveDirection(fromName, toName) {
+    var from = byName(fromName)
+    var to = byName(toName)
+    if (!from || !to) return ""
+    if (to.x > from.x) return "r"
+    if (to.x < from.x) return "l"
+    if (to.y > from.y) return "d"
+    if (to.y < from.y) return "u"
+    return ""
+  }
+
+  function workspaceMoveLines(ids, toMonitor) {
+    var lines = []
+    for (var i = 0; i < ids.length; i++) {
+      var ws = workspaceById(ids[i])
+      if (!ws) continue
+      var direction = moveDirection(ws.monitor, toMonitor)
+      if (!direction) continue
+      // Focus the requested workspace, then use Omarchy's own move primitive so
+      // monitor-block adoption, source settling and focus invariants survive.
+      lines.push('hl.dispatch(hl.dsp.focus({ workspace = "' + ids[i] + '" }))')
+      lines.push('o.workspaces.move_to_monitor("' + direction + '")')
+    }
+    return lines
+  }
+
   function moveWorkspace(id, toMonitor) {
     if (!id || !toMonitor) return
-    applyLua('hl.dispatch(hl.dsp.workspace.move({ workspace = ' + id
-      + ", monitor = " + luaStr(toMonitor) + " }))")
+    applyLua(workspaceMoveLines([id], toMonitor).join("\n"))
   }
 
   // Move every workspace of one monitor to another. The windows follow their
-  // workspaces.
+  // workspaces; the ids are a snapshot before the first move.
   function moveSession(fromMonitor, toMonitor) {
     if (!fromMonitor || !toMonitor || fromMonitor === toMonitor) return
-    var ids = workspaceIds(fromMonitor)
-    if (ids.length === 0) return
-    var lines = []
-    for (var i = 0; i < ids.length; i++)
-      lines.push('hl.dispatch(hl.dsp.workspace.move({ workspace = ' + ids[i]
-        + ", monitor = " + luaStr(toMonitor) + " }))")
-    applyLua(lines.join("\n"))
+    applyLua(workspaceMoveLines(workspaceIds(fromMonitor), toMonitor).join("\n"))
   }
 
-  // Exchange the complete workspace sets of two monitors. The ids are read
-  // before anything moves, so the second set is not the first set's leftovers.
+  // Exchange complete workspace sets, using Omarchy's primitive for each move.
   function swapSessions(a, b) {
     if (!a || !b || a === b) return
     var idsA = workspaceIds(a)
     var idsB = workspaceIds(b)
-    if (idsA.length === 0 && idsB.length === 0) return
-    var lines = []
-    for (var i = 0; i < idsA.length; i++)
-      lines.push('hl.dispatch(hl.dsp.workspace.move({ workspace = ' + idsA[i]
-        + ", monitor = " + luaStr(b) + " }))")
-    for (var j = 0; j < idsB.length; j++)
-      lines.push('hl.dispatch(hl.dsp.workspace.move({ workspace = ' + idsB[j]
-        + ", monitor = " + luaStr(a) + " }))")
+    var lines = workspaceMoveLines(idsA, b).concat(workspaceMoveLines(idsB, a))
     applyLua(lines.join("\n"))
   }
 

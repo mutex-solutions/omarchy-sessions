@@ -10,6 +10,8 @@ import qs.Commons
 Item {
   id: page
 
+  Translations { id: strings; directory: Qt.resolvedUrl("../i18n") }
+
   property var state: null
   property var host: null
 
@@ -99,6 +101,9 @@ Item {
     color: chip.hovered ? Util.alpha(Color.accent, Style.hoverFillAlpha) : "transparent"
     border.width: 1
     border.color: Util.alpha(Color.foreground, chip.enabled ? Style.normalBorderAlpha : 0.12)
+    Accessible.name: label
+    Accessible.role: Accessible.Button
+    Accessible.onPressAction: if (enabled) picked()
 
     Text {
       id: chipText
@@ -111,8 +116,9 @@ Item {
 
     MouseArea {
       anchors.fill: parent
+      enabled: chip.enabled
       hoverEnabled: true
-      cursorShape: Qt.PointingHandCursor
+      cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
       onEntered: chip.hovered = true
       onExited: chip.hovered = false
       onClicked: chip.picked()
@@ -177,7 +183,7 @@ Item {
         anchors.left: parent.left
         anchors.leftMargin: Style.space(8)
         anchors.verticalCenter: parent.verticalCenter
-        text: "Swap sessions"
+        text: strings.t("sessions.swapSessions")
         color: Color.foreground
         font.family: Style.font.family
         font.pixelSize: Style.font.body
@@ -211,7 +217,12 @@ Item {
         required property var modelData
 
         readonly property var session: modelData
-        readonly property string other: page.otherFor(modelData.name)
+        readonly property var destinations: page.state ? page.state.destinationsFor(modelData.name) : []
+        property string destination: ""
+        readonly property string other: {
+          if (destinations.indexOf(destination) !== -1) return destination
+          return destinations.length > 0 ? destinations[0] : ""
+        }
 
         width: col.width
         spacing: Style.space(2)
@@ -223,6 +234,35 @@ Item {
           value: sessionCol.session.windows.length
             + (sessionCol.session.windows.length === 1 ? " window" : " windows")
           gap: Style.space(4)
+        }
+
+        Item {
+          width: sessionCol.width
+          height: Style.space(26)
+          visible: sessionCol.destinations.length > 1
+          Text {
+            anchors.left: parent.left
+            anchors.leftMargin: Style.space(8)
+            anchors.verticalCenter: parent.verticalCenter
+            text: page.sessions.length > 2 ? strings.t("sessions.moveToward") : strings.t("sessions.moveTo")
+            color: Util.alpha(Color.foreground, 0.5)
+            font.family: Style.font.family
+            font.pixelSize: Style.font.caption
+          }
+          Row {
+            anchors.right: parent.right
+            anchors.rightMargin: Style.space(8)
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: Style.space(4)
+            Repeater {
+              model: sessionCol.destinations
+              Chip {
+                required property var modelData
+                label: (sessionCol.other === modelData ? "● " : "") + modelData
+                onPicked: sessionCol.destination = modelData
+              }
+            }
+          }
         }
 
         // every workspace in this session
@@ -240,7 +280,7 @@ Item {
               anchors.left: parent.left
               anchors.leftMargin: Style.space(8)
               anchors.verticalCenter: parent.verticalCenter
-              text: "Workspace " + modelData.id
+              text: strings.t("sessions.workspace") + modelData.id
               color: Color.foreground
               font.family: Style.font.family
               font.pixelSize: Style.font.body
@@ -277,7 +317,7 @@ Item {
             anchors.right: sessionChip.left
             anchors.rightMargin: Style.space(8)
             anchors.verticalCenter: parent.verticalCenter
-            text: "Move session"
+            text: strings.t("sessions.moveSession")
             color: Util.alpha(Color.foreground, 0.75)
             font.family: Style.font.family
             font.pixelSize: Style.font.body
@@ -359,8 +399,8 @@ Item {
       topPadding: Style.space(3)
       leftPadding: Style.space(8)
       text: page.sessions.length > 1
-        ? "Moves go to the other display's active workspace"
-        : "Connect a second display to move windows between them"
+        ? strings.t("sessions.windowExactWorkspaceDirectional")
+        : strings.t("sessions.connectSecondDisplay")
     }
   }
 }
